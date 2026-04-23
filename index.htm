@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>EcoDirecto - Productos ecológicos frescos</title>
+    <!-- Font Awesome 6 (iconos) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts: fuentes modernas -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #1e2a2e;
+        }
+
+        /* Paleta de colores: verde principal, naranja acento */
+        :root {
+            --verde-principal: #2E7D32;
+            --verde-claro: #e8f5e9;
+            --naranja: #F57C00;
+            --naranja-claro: #fff3e0;
+            --verde-fondo: #eaf7e4;
+            --gris-texto: #4a5568;
+            --sombra: 0 2px 8px rgba(0,0,0,0.05);
+            --sombra-hover: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        /* HEADER / NAVBAR (estilo Amazon pero verde/naranja) */
+        .navbar {
+            background-color: var(--verde-principal);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -0.5px;
+        }
+        .logo span {
+            color: var(--naranja);
+        }
+        .logo small {
+            font-size: 0.8rem;
+            font-weight: 400;
+            display: block;
+            letter-spacing: normal;
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 500px;
+            display: flex;
+            background: white;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .search-bar input {
+            flex: 1;
+            padding: 0.7rem 1.2rem;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+        }
+        .search-bar button {
+            background-color: var(--naranja);
+            border: none;
+            padding: 0 1.2rem;
+            cursor: pointer;
+            color: white;
+            font-size: 1.2rem;
+            transition: background 0.2s;
+        }
+        .search-bar button:hover {
+            background-color: #e65100;
+        }
+
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+            background-color: rgba(255,255,255,0.2);
+            padding: 0.6rem 1rem;
+            border-radius: 50px;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            font-weight: 500;
+        }
+        .cart-icon i {
+            font-size: 1.6rem;
+        }
+        .cart-icon:hover {
+            background-color: rgba(255,255,255,0.3);
+        }
+        .cart-count {
+            background-color: var(--naranja);
+            color: #1e2a2e;
+            border-radius: 30px;
+            padding: 0.1rem 0.5rem;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        /* layout principal */
+        .main-container {
+            display: flex;
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            gap: 2rem;
+        }
+
+        /* SIDEBAR FILTROS (estilo categorías) */
+        .filters {
+            width: 260px;
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: var(--sombra);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+        .filters h3 {
+            color: var(--verde-principal);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            border-left: 4px solid var(--naranja);
+            padding-left: 0.7rem;
+        }
+        .filter-group {
+            margin-bottom: 1.5rem;
+        }
+        .filter-group label {
+            display: block;
+            margin: 0.5rem 0;
+            cursor: pointer;
+            color: var(--gris-texto);
+        }
+        .filter-group input {
+            margin-right: 0.5rem;
+            accent-color: var(--verde-principal);
+        }
+        .price-range {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .price-range input {
+            width: 80px;
+            padding: 0.3rem;
+            border: 1px solid #ccc;
+            border-radius: 12px;
+        }
+
+        /* productos grid */
+        .products-section {
+            flex: 1;
+        }
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.8rem;
+        }
+        .product-card {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--sombra);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--sombra-hover);
+        }
+        .product-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background-color: var(--verde-claro);
+        }
+        .product-info {
+            padding: 1rem 1rem 1.2rem;
+        }
+        .product-title {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
+            color: #1e2a2e;
+        }
+        .product-origin {
+            font-size: 0.75rem;
+            color: var(--verde-principal);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .product-price {
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: var(--naranja);
+            margin: 0.5rem 0;
+        }
+        .btn-add {
+            background-color: var(--verde-principal);
+            color: white;
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 40px;
+            width: 100%;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .btn-add:hover {
+            background-color: #1b5e20;
+        }
+
+        /* MODAL CARRITO */
+        .cart-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            max-width: 500px;
+            height: 100%;
+            background: white;
+            box-shadow: -5px 0 20px rgba(0,0,0,0.2);
+            z-index: 1000;
+            padding: 1.5rem;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        .cart-modal.open {
+            display: flex;
+        }
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--verde-claro);
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+        .cart-header h2 {
+            color: var(--verde-principal);
+        }
+        .close-cart {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--gris-texto);
+        }
+        .cart-items-list {
+            flex: 1;
+            list-style: none;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            padding: 0.8rem 0;
+        }
+        .cart-item-info {
+            flex: 1;
+        }
+        .cart-item-title {
+            font-weight: 600;
+        }
+        .cart-item-price {
+            font-size: 0.8rem;
+            color: var(--naranja);
+        }
+        .cart-item-remove {
+            color: #d32f2f;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+        }
+        .cart-total {
+            margin-top: 1.5rem;
+            font-size: 1.3rem;
+            font-weight: bold;
+            text-align: right;
+            border-top: 2px solid #eee;
+            padding-top: 1rem;
+        }
+        .checkout-btn {
+            background-color: var(--naranja);
+            color: white;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 40px;
+            font-weight: bold;
+            margin-top: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .checkout-btn:hover {
+            background-color: #e65100;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+        .overlay.active {
+            display: block;
+        }
+
+        footer {
+            background-color: #1e2a2e;
+            color: #ddd;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            font-size: 0.85rem;
+        }
+        .footer-values {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .footer-values span {
+            color: var(--naranja);
+            font-weight: 500;
+        }
+
+        @media (max-width: 800px) {
+            .main-container {
+                flex-direction: column;
+            }
+            .filters {
+                width: 100%;
+                position: static;
+            }
+            .navbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .search-bar {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="logo">
+        ECO DIRECT<span>.</span>
+        <small>Desde el campo a tu mesa.</small>
+    </div>
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Busca tomates ecológicos, lechuga, fruta...">
+        <button id="searchBtn"><i class="fas fa-search"></i></button>
+    </div>
+    <div class="cart-icon" id="cartIcon">
+        <i class="fas fa-shopping-cart"></i>
+        <span id="cartCounter" class="cart-count">0</span>
+        <span>Carrito</span>
+    </div>
+</div>
+
+<div class="main-container">
+    <!-- FILTROS LATERALES -->
+    <aside class="filters">
+        <h3><i class="fas fa-leaf"></i> Categorías</h3>
+        <div class="filter-group" id="categoryFilters">
+            <label><input type="radio" name="category" value="all" checked> Todos</label>
+            <label><input type="radio" name="category" value="verdura"> Verduras</label>
+            <label><input type="radio" name="category" value="fruta"> Frutas</label>
+            <label><input type="radio" name="category" value="aceite"> Aceites</label>
+            <label><input type="radio" name="category" value="otros"> Otros Productos</label>
+        </div>
+        <h3>Precio máximo</h3>
+        <div class="price-range">
+            <input type="number" id="maxPrice" placeholder="Máx €" value="30" step="1">
+        </div>
+        <button id="applyFilters" style="margin-top: 1rem; background: var(--naranja); border: none; padding: 0.5rem; border-radius: 30px; width: 100%; font-weight: bold; cursor: pointer;">Aplicar filtros</button>
+    </aside>
+
+    <!-- PRODUCTOS -->
+    <section class="products-section">
+        <h2 style="margin-bottom: 1.5rem; color: var(--verde-principal);"><i class="fas fa-seedling"></i> Productos frescos y ecológicos</h2>
+        <div class="products-grid" id="productsGrid"></div>
+    </section>
+</div>
+
+<!-- MODAL CARRITO + OVERLAY -->
+<div class="overlay" id="overlay"></div>
+<div class="cart-modal" id="cartModal">
+    <div class="cart-header">
+        <h2><i class="fas fa-shopping-basket"></i> Tu pedido EcoDirect</h2>
+        <button class="close-cart" id="closeCartBtn">&times;</button>
+    </div>
+    <ul class="cart-items-list" id="cartItemsList">
+        <li style="text-align:center; color:gray;">Carrito vacío</li>
+    </ul>
+    <div class="cart-total" id="cartTotal">Total: 0,00 €</div>
+    <button class="checkout-btn" id="checkoutBtn"><i class="fas fa-truck"></i> Proceder al pedido (Esto hace una simulación del pedido)</button>
+    <small style="margin-top: 1rem; color: var(--verde-principal); text-align: center;">Envíos en poco tiempo | Sin intermediario | Resiviras la confirmación por tu correo electrinico. </small>
+</div>
+<!-- SECCIÓN DE MÁS INFORMACIÓN (antes del footer) -->
+<div class="extra-ecodirecto">
+    <div class="extra-container">
+        <h2><i class="fas fa-seedling"></i> Más que una tienda ecológica</h2>
+        <p class="extra-intro">En <strong>EcoDirecto</strong> no solo vendemos frutas y verduras. Queremos construir un ecosistema sostenible, justo y lleno de oportunidades para ti y el planeta.</p>
+
+        <div class="extra-grid">
+            <!-- 1. Nuevos productos ecológicos -->
+            <div class="extra-card">
+                <i class="fas fa-cheese"></i>
+                <h3>🍷 Ampliamos nuestra despensa</h3>
+                <p><strong>Venta de productos ecológicos de proximidad:</strong> leche, aceites, vinos, quesos, legumbres y mucho más. Todo directamente de productores locales, sin intermediarios.</p>
+                <small>Próximamente en la app — con la misma trazabilidad y frescura.</small>
+            </div>
+
+            <!-- 2. Biocombustible de hueso de aceituna -->
+            <div class="extra-card">
+                <i class="fas fa-fire"></i>
+                <h3>♻️ Biocombustible sostenible</h3>
+                <p><strong>Venta de hueso de aceituna</strong> como biomasa ecológica. Lo enviamos bajo pedido directamente desde la almazara u orujera colaboradora. Ideal para calderas, estufas y usos industriales con bajas emisiones.</p>
+                <small>Pregunta por cantidades y precios personalizados.</small>
+            </div>
+
+            <!-- 3. Colaboraciones y patrocinios -->
+            <div class="extra-card">
+                <i class="fas fa-handshake"></i>
+                <h3>🤝 Compromiso comunitario</h3>
+                <p><strong>Colaboraciones con ONG</strong> locales y nacionales (bancos de alimentos, asociaciones de agricultores). También <strong>patrocinamos equipos deportivos</strong> de fútbol, voleibol y baloncesto base para fomentar hábitos saludables desde el deporte y la alimentación ecológica.</p>
+                <small>¿Quieres que EcoDirecto patrocine tu equipo? Escríbenos.</small>
+            </div>
+
+            <!-- 4. Formación y noticias -->
+            <div class="extra-card">
+                <i class="fas fa-graduation-cap"></i>
+                <h3>📚 Formación alimentaria gratuita</h3>
+                <p><strong>Cursos online:</strong> Manipulación de alimentos, nutrición básica y recetas de temporada.<br>
+                <strong>Noticias del sector:</strong> Cambios en recetas, alertas alimentarias y novedades ecológicas.<br>
+                <strong>Artículos divulgativos:</strong> “¿Sabías que el café ecológico retiene más antioxidantes?” y mucho más.</p>
+                <small>Accede desde nuestra web o app — totalmente gratis para la comunidad.</small>
+            </div>
+        </div>
+
+        <!-- Llamada final -->
+        <div class="extra-cta">
+            <i class="fas fa-leaf"></i>  Únete a la revolución ecológica. Por una alimentación más justa, un planeta más limpio y una comunidad más fuerte.
+        </div>
+    </div>
+</div>
+
+<!-- Estilos específicos para esta sección (complementan los existentes) -->
+<style>
+    .extra-ecodirecto {
+        background: linear-gradient(145deg, #fef9e6 0%, #ffffff 100%);
+        padding: 3rem 1.5rem;
+        margin: 2rem 0 0 0;
+        border-top: 1px solid var(--naranja);
+        border-bottom: 1px solid var(--verde-principal);
+    }
+    .extra-container {
+        max-width: 1300px;
+        margin: 0 auto;
+    }
+    .extra-container h2 {
+        text-align: center;
+        color: var(--verde-principal);
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    .extra-intro {
+        text-align: center;
+        max-width: 800px;
+        margin: 0 auto 2.5rem auto;
+        font-size: 1.1rem;
+        color: var(--gris-texto);
+    }
+    .extra-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+    .extra-card {
+        background: white;
+        border-radius: 28px;
+        padding: 1.6rem;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        transition: all 0.2s ease;
+        border-left: 4px solid var(--naranja);
+    }
+    .extra-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    .extra-card i {
+        font-size: 2.2rem;
+        color: var(--verde-principal);
+        margin-bottom: 0.8rem;
+        display: inline-block;
+    }
+    .extra-card h3 {
+        color: var(--verde-principal);
+        margin-bottom: 0.8rem;
+        font-size: 1.4rem;
+    }
+    .extra-card p {
+        color: #2c3e2f;
+        line-height: 1.4;
+        margin-bottom: 0.8rem;
+    }
+    .extra-card small {
+        color: #f57c00;
+        font-size: 0.8rem;
+        display: block;
+        margin-top: 0.6rem;
+    }
+    .extra-cta {
+        text-align: center;
+        background-color: var(--verde-principal);
+        color: white;
+        padding: 1.2rem;
+        border-radius: 60px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-top: 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .extra-cta i {
+        margin-right: 0.6rem;
+        color: var(--naranja);
+    }
+    @media (max-width: 700px) {
+        .extra-grid {
+            grid-template-columns: 1fr;
+        }
+        .extra-container h2 {
+            font-size: 1.6rem;
+        }
+    }
+</style>
+<footer>
+    <div class="footer-values">
+        <p>Para mucha más información, puedes contactarnos por:<p>
+        Correo electronico: noperly@ecodirect.com | Numero telefonico: (1264)12368 | Ortas fuentes de info. ● Instagram ● Facebbok ● X ● Tiktok
+        <p>
+        
+        <span>🌿 Transparencia</span> • <span>🍃 Impacto ecológico</span> • <span>🤝 Responsabilidad social</span> • <span>🧠 Mentalidad abierta</span> • <span>🔄 Adaptabilidad</span> • <span>❤️ Impacto positivo</span> • <span>⚖️ Justicia laboral</span> • <span>🌈 Inclusión</span>
+    </div>
+    <p>© 2025 EcoDirecto – Productos ecológicos directos del agricultor | Huella de carbono reducida | Envases compostables</p>
+</footer>
+
+<script>
+    // ---------- BASE DE DATOS DE PRODUCTOS ----------
+    const productos = [
+        { id: 1, nombre: "Tomate Rama ecológico 500gr", categoria: "verdura", precio: 2.29, origen: "Zafaraya, Granada", imagen: "https://frutasrubiosanchez.es/wp-content/uploads/2018/07/tomate-rama.jpg" },
+        { id: 2, nombre: "Esparragos ecológicos 1kg", categoria: "verdura", precio: 3.20, origen: "Huetor Tajar, Granada", imagen: "https://centro-sur.es/wp-content/uploads/2024/10/024_1008-024_1008-BIO-1.png" },
+        { id: 3, nombre: "AOVE Poniete 4L", categoria: "aceite", precio: 20.00, origen: "Montefrío, Granda", imagen: "https://www.aceitesmontevilla.com/wp-content/uploads/2022/03/ESTUCHE_CHORREAO_2-removebg-preview.png" },
+        { id: 4, nombre: "Mango ecológico 5kg", categoria: "fruta", precio: 5.20, origen: "Zafaraya", imagen: "https://frutasrubiosanchez.es/wp-content/uploads/2018/07/mango.jpg" },
+        { id: 5, nombre: "AOVE Oleotajar 5L", categoria: "aceite", precio: 21.30, origen: "Huetor Tajar, Granada", imagen: "https://oleotajar.com/wp-content/uploads/2023/06/OLEO-PACKS-2.png" },
+        { id: 6, nombre: "Aguacate ecológico 1kg", categoria: "fruta", precio: 4.50, origen: "Málaga", imagen: "https://www.planetahuerto.es/cdn/shop/files/8c761f4aa45e4a3e97ae9f79b233f37d.jpg?v=1770255119&width=1445" },
+        { id: 7, nombre: "Lechuga ecológica", categoria: "verdura", precio: 1.10, origen: "Sierra Nevada, Granada", imagen: "https://frutasrubiosanchez.es/wp-content/uploads/2018/07/lechuga-batavia.jpg" },
+        { id: 8, nombre: "Queso artesano de cabra", categoria: "otros", precio: 3.10, origen: "Montefrío,Granada", imagen: "https://quesomontefrieno.es/wp-content/uploads/2020/07/curado-cabra-puro-aceite-grande-1-web-1536x1536.jpg" },
+        { id: 9, nombre: "Vino naranja", categoria: "otros", precio: 14.10, origen: "Montefrío,Granada", imagen: "https://productosdelasierra.com/505-thickbox_default/vino-de-naranja.jpg" },
+        { id: 10, nombre: "Cerveza artezana Pilsen", categoria: "otros", precio: 3.95, origen: "Extremadura", imagen: "https://productosdelasierra.com/494-thickbox_default/cerveza-artesana-pilsen-5.jpg" },
+        { id: 11, nombre: "Sandia ecológica", categoria: "fruta", precio: 3.10, origen: "Montefrío,Granada", imagen: "https://frutasrubiosanchez.es/wp-content/uploads/2018/07/sandia.jpg" },
+        { id: 12, nombre: "Pimiento verde 500gr", categoria: "verdura", precio: 3.25, origen: "Zafaraya,Granada", imagen: "https://frutasrubiosanchez.es/wp-content/uploads/2018/07/pimiento-asar-verde.jpg" },
+        { id: 12, nombre: "AOVE Dillar Eco 5L", categoria: "aceite", precio: 28.50, origen: "Sierra Nevada, Granada", imagen: "https://www.quaryatdillar.com/wp-content/uploads/2020/03/aceite-de-oliva-virgen-extra-dillar-ecologico-e1606837754644.jpg" },
+        
+    ];
+
+    let carrito = [];  // { id, nombre, precio, cantidad }
+
+    // Referencias DOM
+    const productsGrid = document.getElementById('productsGrid');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const categoryRadios = document.querySelectorAll('input[name="category"]');
+    const maxPriceInput = document.getElementById('maxPrice');
+    const applyFiltersBtn = document.getElementById('applyFilters');
+    const cartIcon = document.getElementById('cartIcon');
+    const cartModal = document.getElementById('cartModal');
+    const overlay = document.getElementById('overlay');
+    const closeCartBtn = document.getElementById('closeCartBtn');
+    const cartItemsList = document.getElementById('cartItemsList');
+    const cartTotalSpan = document.getElementById('cartTotal');
+    const cartCounterSpan = document.getElementById('cartCounter');
+    const checkoutBtn = document.getElementById('checkoutBtn');
+
+    // Funciones de renderizado de productos
+    function renderProducts() {
+        // Obtener filtros
+        const searchTerm = searchInput.value.toLowerCase();
+        let selectedCategory = "all";
+        for (let radio of categoryRadios) {
+            if (radio.checked) selectedCategory = radio.value;
+        }
+        let maxPrice = parseFloat(maxPriceInput.value);
+        if (isNaN(maxPrice)) maxPrice = 999;
+
+        const filtered = productos.filter(p => {
+            const matchSearch = p.nombre.toLowerCase().includes(searchTerm);
+            const matchCat = (selectedCategory === "all" || p.categoria === selectedCategory);
+            const matchPrice = p.precio <= maxPrice;
+            return matchSearch && matchCat && matchPrice;
+        });
+
+        if (filtered.length === 0) {
+            productsGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center;">🥕 No hay productos con esos filtros, proximamente se anucian nuevos productos🥕 </div>`;
+            return;
+        }
+
+        productsGrid.innerHTML = filtered.map(p => `
+            <div class="product-card" data-id="${p.id}">
+                <img class="product-img" src="${p.imagen}" alt="${p.nombre}" loading="lazy">
+                <div class="product-info">
+                    <div class="product-title">${p.nombre}</div>
+                    <div class="product-origin"><i class="fas fa-map-marker-alt"></i> ${p.origen}</div>
+                    <div class="product-price">${p.precio.toFixed(2)} €</div>
+                    <button class="btn-add" data-id="${p.id}" data-nombre="${p.nombre}" data-precio="${p.precio}">
+                        <i class="fas fa-plus-circle"></i> Añadir
+                    </button>
+                </div>
+            </div>
+        `).join('');
+
+        // Asignar eventos a botones "Añadir" después de renderizar
+        document.querySelectorAll('.btn-add').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = parseInt(btn.dataset.id);
+                const nombre = btn.dataset.nombre;
+                const precio = parseFloat(btn.dataset.precio);
+                agregarAlCarrito(id, nombre, precio);
+            });
+        });
+    }
+
+    // Carrito funciones
+    function agregarAlCarrito(id, nombre, precio) {
+        const existente = carrito.find(item => item.id === id);
+        if (existente) {
+            existente.cantidad++;
+        } else {
+            carrito.push({ id, nombre, precio, cantidad: 1 });
+        }
+        actualizarUIcarrito();
+    }
+
+    function eliminarDelCarrito(id) {
+        const index = carrito.findIndex(item => item.id === id);
+        if (index !== -1) {
+            if (carrito[index].cantidad > 1) {
+                carrito[index].cantidad--;
+            } else {
+                carrito.splice(index, 1);
+            }
+        }
+        actualizarUIcarrito();
+    }
+
+    function eliminarItemCompleto(id) {
+        carrito = carrito.filter(item => item.id !== id);
+        actualizarUIcarrito();
+    }
+
+    function actualizarUIcarrito() {
+        // Actualizar contador
+        let totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
+        cartCounterSpan.innerText = totalItems;
+
+        // Renderizar lista del modal
+        if (carrito.length === 0) {
+            cartItemsList.innerHTML = '<li style="text-align:center; color:gray;">🛒 Carrito vacío, añade productos ecológicos</li>';
+            cartTotalSpan.innerText = `Total: 0,00 €`;
+            return;
+        }
+
+        let total = 0;
+        cartItemsList.innerHTML = '';
+        carrito.forEach(item => {
+            const subtotal = item.precio * item.cantidad;
+            total += subtotal;
+            const li = document.createElement('li');
+            li.className = 'cart-item';
+            li.innerHTML = `
+                <div class="cart-item-info">
+                    <div class="cart-item-title">${item.nombre}</div>
+                    <div class="cart-item-price">${item.precio.toFixed(2)} € x ${item.cantidad} = ${subtotal.toFixed(2)}€</div>
+                </div>
+                <div>
+                    <button class="cart-item-remove" data-id="${item.id}" title="Quitar uno"><i class="fas fa-minus-circle"></i></button>
+                    <button class="cart-item-remove" data-id="${item.id}" data-full="true" title="Eliminar todo" style="margin-left:8px;"><i class="fas fa-trash-alt"></i></button>
+                </div>
+            `;
+            cartItemsList.appendChild(li);
+        });
+
+        // Eventos de eliminar
+        document.querySelectorAll('.cart-item-remove').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = parseInt(btn.dataset.id);
+                const full = btn.dataset.full === 'true';
+                if (full) {
+                    eliminarItemCompleto(id);
+                } else {
+                    eliminarDelCarrito(id);
+                }
+            });
+        });
+
+        cartTotalSpan.innerText = `Total: ${total.toFixed(2)} €`;
+    }
+
+    // Modal carrito
+    function openCart() {
+        cartModal.classList.add('open');
+        overlay.classList.add('active');
+        actualizarUIcarrito();
+    }
+    function closeCart() {
+        cartModal.classList.remove('open');
+        overlay.classList.remove('active');
+    }
+
+    // Eventos principales
+    cartIcon.addEventListener('click', openCart);
+    closeCartBtn.addEventListener('click', closeCart);
+    overlay.addEventListener('click', closeCart);
+    searchBtn.addEventListener('click', renderProducts);
+    searchInput.addEventListener('keyup', (e) => { if(e.key === 'Enter') renderProducts(); });
+    applyFiltersBtn.addEventListener('click', renderProducts);
+
+    // Checkout simulado
+    checkoutBtn.addEventListener('click', () => {
+        if (carrito.length === 0) {
+            alert("Añade algún producto ecológico antes de comprar 🌱");
+            return;
+        }
+        alert("¡Gracias por tu pedido en EcoDirecto! Recibirás tus productos frescos en 24h (simulación).");
+        carrito = [];
+        actualizarUIcarrito();
+        closeCart();
+        renderProducts(); // refrescar por si acaso
+    });
+
+    // Inicializar
+    renderProducts();
+    actualizarUIcarrito();
+</script>
+</body>
+</html>
